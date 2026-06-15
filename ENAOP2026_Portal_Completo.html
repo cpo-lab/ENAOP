@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ENAOP 2026.1 - Portal do Participante</title>
+<style>
+:root{--azul:#003b7a;--azul2:#00264d;--ouro:#f4b400;--verde:#198754;}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f4f6f8;color:#222}
+header{background:linear-gradient(135deg,var(--azul2),var(--azul));color:#fff;padding:25px;text-align:center}
+#clock{font-size:52px;font-weight:bold;color:var(--ouro)}
+.container{max-width:1300px;margin:auto;padding:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}
+.card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.current{border-left:8px solid var(--verde)}
+.next{border-left:8px solid var(--ouro)}
+.progress{height:22px;background:#ddd;border-radius:20px;overflow:hidden}
+.bar{height:100%;width:0;background:var(--verde)}
+button{background:var(--azul);color:#fff;border:none;padding:10px 14px;border-radius:8px;margin:3px;cursor:pointer}
+table{width:100%;border-collapse:collapse;background:#fff;margin-top:15px}
+th{background:var(--azul);color:#fff}
+th,td{padding:10px;border:1px solid #ddd}
+tr:hover{background:#f8fbff}
+footer{text-align:center;padding:20px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1>ENAOP 2026.1</h1>
+<h2>Encontro Nacional de Operações</h2>
+<div id="clock"></div>
+<div id="countdown"></div>
+</header>
+
+<div class="container">
+<div class="cards">
+<div class="card current">
+<h3>Atividade Atual</h3>
+<div id="current">Aguardando início do evento</div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+</div>
+<div class="card next">
+<h3>Próxima Atividade</h3>
+<div id="next">---</div>
+</div>
+<div class="card">
+<h3>Cronômetro do Palestrante</h3>
+<div id="speakerTimer" style="font-size:32px;font-weight:bold">55:00</div>
+<button onclick="startTimer()">Iniciar</button>
+<button onclick="resetTimer()">Reiniciar</button>
+</div>
+</div>
+
+<div style="margin-top:15px">
+<button onclick="filterDay('all')">Todos</button>
+<button onclick="filterDay('13/07/2026')">13 Jul</button>
+<button onclick="filterDay('14/07/2026')">14 Jul</button>
+<button onclick="filterDay('15/07/2026')">15 Jul</button>
+<button onclick="filterDay('16/07/2026')">16 Jul</button>
+</div>
+
+<table id="agenda">
+<thead><tr><th>Nº</th><th>Data</th><th>Horário</th><th>Atividade</th></tr></thead>
+<tbody>
+<tr data-day="13/07/2026"><td>1</td><td>13/07/2026</td><td>09h00 às 10h20</td><td>Abertura</td></tr>
+<tr data-day="13/07/2026"><td>2</td><td>13/07/2026</td><td>10h35 às 11h55</td><td>Fala da Diretora de Operações</td></tr>
+<tr data-day="13/07/2026"><td>3</td><td>13/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+<tr data-day="13/07/2026"><td>4</td><td>13/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+<tr data-day="13/07/2026"><td>5</td><td>13/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+<tr data-day="13/07/2026"><td>6</td><td>13/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>7</td><td>14/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>8</td><td>14/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>9</td><td>14/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>10</td><td>14/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>11</td><td>14/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>12</td><td>14/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+<tr data-day="14/07/2026"><td>13</td><td>14/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>14</td><td>15/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>15</td><td>15/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>16</td><td>15/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>17</td><td>15/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>18</td><td>15/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>19</td><td>15/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+<tr data-day="15/07/2026"><td>20</td><td>15/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>21</td><td>16/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>22</td><td>16/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>23</td><td>16/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>24</td><td>16/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>25</td><td>16/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+<tr data-day="16/07/2026"><td>26</td><td>16/07/2026</td><td>15h45 às 16h00</td><td>Consolidação das Deliberações</td></tr>
+<tr data-day="16/07/2026"><td>27</td><td>16/07/2026</td><td>16h00 às 17h30</td><td>Encerramento</td></tr>
+</tbody></table>
+</div>
+<footer>ENAOP 2026.1 • Portal do Participante</footer>
+<script>
+function tick(){
+ let d=new Date();
+ document.getElementById('clock').innerHTML=d.toLocaleTimeString('pt-BR');
+ let ev=new Date('2026-07-13T09:00:00');
+ let diff=ev-d;
+ if(diff>0){document.getElementById('countdown').innerHTML='Faltam '+Math.floor(diff/86400000)+' dias para o evento';}
+ else{document.getElementById('countdown').innerHTML='Evento iniciado';}
+}
+setInterval(tick,1000);tick();
+
+function filterDay(day){
+ document.querySelectorAll('#agenda tbody tr').forEach(r=>{
+   r.style.display=(day==='all'||r.dataset.day===day)?'':'none';
+ });
+}
+
+let secs=3300,timer=null;
+function render(){let m=Math.floor(secs/60),s=secs%60;document.getElementById('speakerTimer').innerHTML=(m+'').padStart(2,'0')+':'+(s+'').padStart(2,'0');}
+function startTimer(){if(timer)return;timer=setInterval(()=>{if(secs>0){secs--;render();}},1000);}
+function resetTimer(){clearInterval(timer);timer=null;secs=3300;render();}
+render();
+</script>
+</body></html>
