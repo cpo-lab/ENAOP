@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ENAOP 2026.1 - Portal do Participante</title>
+<style>
+/* SISTEMA DE CORES E VARIÁVEIS */
+:root{
+  --azul: #003b7a; /* Profundo, alinhado ao azul PRF */
+  --azul2: #00264d; /* Mais escuro para gradiente e contraste */
+  --ouro: #f4b400; /* Destaque e contagens regressivas */
+  --verde: #198754; /* Sucesso e atividades atuais */
+  --cinza-fundo: #f4f6f8;
+  --branco: #ffffff;
+  --texto-principal: #222222;
+  --texto-secundario: #666666;
+  --borda: #dddddd;
+  --transparency: rgba(0,0,0,0.1);
+}
+
+/* RESET E ESTILOS BÁSICOS */
+*{ box-sizing: border-box; }
+body{
+  margin:0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: var(--cinza-fundo);
+  color: var(--texto-principal);
+  line-height: 1.5;
+}
+
+/* CABEÇALHO COM BRASÃO INTEGRADO */
+header{
+  background: linear-gradient(135deg, var(--azul2), var(--azul));
+  color: var(--branco);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centralizado por padrão */
+  gap: 25px; /* Espaço entre brasão e texto */
+  flex-wrap: wrap; /* Permite que os elementos se alinhem em telas pequenas */
+}
+
+.prf-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prf-logo {
+  height: 90px; /* Tamanho proporcional ao título */
+  width: auto;
+  transition: transform 0.3s ease; /* Efeito hover sutil */
+}
+
+.prf-logo:hover {
+  transform: scale(1.05);
+}
+
+.header-text {
+  flex: 1; /* Permite que o texto ocupe o espaço restante */
+  min-width: 300px; /* Garante que o texto tenha espaço mínimo */
+  text-align: center; /* Centralizado */
+}
+
+header h1, header h2 { margin: 0; }
+header h1 { font-size: 36px; font-weight: bold; }
+header h2 { font-size: 20px; font-weight: normal; margin-top: 5px; opacity: 0.9; }
+
+/* RELÓGIO E CONTAGEM REGRESSIVA */
+.clock-section {
+  text-align: center;
+  margin-top: 15px;
+}
+#clock { font-size: 52px; font-weight: bold; color: var(--ouro); }
+#countdown { font-size: 18px; color: var(--branco); opacity: 0.8; }
+
+/* CONTEÚDO PRINCIPAL */
+.container{
+  max-width: 1300px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* CARDS DE ATIVIDADE E CRONÔMETRO */
+.cards{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Responsivo */
+  gap: 20px; /* Maior espaçamento */
+  margin-top: -30px; /* Efeito sobreposto ao cabeçalho */
+}
+
+.card{
+  background: var(--branco);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px var(--transparency);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15); /* Destaque hover */
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--azul);
+  border-bottom: 2px solid var(--cinza-fundo);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.current{ border-top: 8px solid var(--verde); } /* Indicador de atividade atual */
+.next{ border-top: 8px solid var(--ouro); } /* Indicador de próxima atividade */
+
+.progress{
+  height: 18px;
+  background: #eee;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 15px;
+  position: relative;
+}
+.bar{
+  height: 100%;
+  width: 0;
+  background: var(--verde);
+  transition: width 0.5s ease-out; /* Animação suave da barra */
+}
+
+/* CRONÔMETRO DO PALESTRANTE */
+#speakerTimer {
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--ouro);
+  margin: 10px 0;
+  display: block;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+button{
+  background-color: var(--azul);
+  color: var(--branco);
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Feedback tátil e visual */
+  white-space: nowrap;
+}
+
+button:hover{ background-color: var(--azul2); }
+button:active { transform: scale(0.98); } /* Feedback tátil ao clicar */
+
+/* BOTÕES DE FILTRO */
+.filter-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+.filter-section button {
+  background-color: transparent;
+  color: var(--texto-secundario);
+  border: 1px solid var(--texto-secundario);
+}
+.filter-section button.active {
+  background-color: var(--azul);
+  color: var(--branco);
+  border-color: var(--azul);
+}
+
+/* TABELA DE AGENDA */
+#agenda-container {
+  background: var(--branco);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px var(--transparency);
+  overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Garante que a tabela não quebre layout em telas muito pequenas */
+}
+
+th{
+  background-color: var(--azul);
+  color: var(--branco);
+  text-align: left;
+  font-weight: bold;
+}
+
+th,td{
+  padding: 15px;
+  border: 1px solid var(--borda);
+}
+
+tbody tr:nth-child(even) { background-color: #fafafa; } /* Cores alternadas */
+tbody tr:hover{ background-color: #e6f3ff; } /* Destaque hover */
+
+/* RODAPÉ */
+footer{
+  text-align: center;
+  padding: 25px;
+  color: var(--texto-secundario);
+  margin-top: 30px;
+  border-top: 1px solid var(--borda);
+}
+
+/* RESPONSIVIDADE ADICIONAL */
+@media (min-width: 768px) {
+  .header-container {
+    justify-content: flex-start; /* Alinhado à esquerda em telas maiores */
+  }
+  .header-text {
+    text-align: left; /* Texto alinhado à esquerda */
+  }
+  .header-container { flex-direction: row; text-align: left; justify-content: space-between; } /* Layout horizontal */
+  .prf-logo-container { margin-bottom: 0; }
+  .filter-section { justify-content: flex-start; } /* Filtros alinhados à esquerda */
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <div class="prf-logo-container">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prf_brasao_novo.jpg" alt="Brasão Oficial da PRF" class="prf-logo">
+    </div>
+    <div class="header-text">
+      <h1>ENAOP 2026.1</h1>
+      <h2>Encontro Nacional de Operações</h2>
+    </div>
+  </div>
+  <div class="clock-section container">
+    <div id="clock"></div>
+    <div id="countdown"></div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="cards">
+    <div class="card current">
+      <h3>Atividade Atual</h3>
+      <div id="current">Aguardando início do evento</div>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+    </div>
+    <div class="card next">
+      <h3>Próxima Atividade</h3>
+      <div id="next">---</div>
+    </div>
+    <div class="card timer-card">
+      <h3>Cronômetro do Palestrante</h3>
+      <div class="speakerTimer-container">
+        <span id="speakerTimer">55:00</span>
+      </div>
+      <div class="timer-controls">
+        <button onclick="startTimer()">Iniciar</button>
+        <button onclick="resetTimer()">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-section container">
+    <button onclick="filterDay('all')" class="active">Todos</button>
+    <button onclick="filterDay('13/07/2026')">13 Jul</button>
+    <button onclick="filterDay('14/07/2026')">14 Jul</button>
+    <button onclick="filterDay('15/07/2026')">15 Jul</button>
+    <button onclick="filterDay('16/07/2026')">16 Jul</button>
+  </div>
+
+  <div id="agenda-container">
+    <table id="agenda">
+      <thead><tr><th>Nº</th><th>Data</th><th>Horário</th><th>Atividade</th></tr></thead>
+      <tbody>
+        <tr data-day="13/07/2026"><td>1</td><td>13/07/2026</td><td>09h00 às 10h20</td><td>Abertura</td></tr>
+        <tr data-day="13/07/2026"><td>2</td><td>13/07/2026</td><td>10h35 às 11h55</td><td>Fala da Diretora de Operações</td></tr>
+        <tr data-day="13/07/2026"><td>3</td><td>13/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+        <tr data-day="13/07/2026"><td>4</td><td>13/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+        <tr data-day="13/07/2026"><td>5</td><td>13/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+        <tr data-day="13/07/2026"><td>6</td><td>13/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>7</td><td>14/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>8</td><td>14/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>9</td><td>14/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>10</td><td>14/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>11</td><td>14/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>12</td><td>14/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+        <tr data-day="14/07/2026"><td>13</td><td>14/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>14</td><td>15/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>15</td><td>15/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>16</td><td>15/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>17</td><td>15/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>18</td><td>15/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>19</td><td>15/07/2026</td><td>15h45 às 16h40</td><td>Tema a definir</td></tr>
+        <tr data-day="15/07/2026"><td>20</td><td>15/07/2026</td><td>16h40 às 17h30</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>21</td><td>16/07/2026</td><td>09h00 às 09h55</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>22</td><td>16/07/2026</td><td>09h55 às 10h50</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>23</td><td>16/07/2026</td><td>11h05 às 12h00</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>24</td><td>16/07/2026</td><td>13h30 às 14h25</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>25</td><td>16/07/2026</td><td>14h25 às 15h20</td><td>Tema a definir</td></tr>
+        <tr data-day="16/07/2026"><td>26</td><td>16/07/2026</td><td>15h45 às 16h00</td><td>Consolidação das Deliberações</td></tr>
+        <tr data-day="16/07/2026"><td>27</td><td>16/07/2026</td><td>16h00 às 17h30</td><td>Encerramento</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <p><strong>ENAOP 2026.1</strong> • Portal do Participante</p>
+  <p>Polícia Rodoviária Federal</p>
+</footer>
+
+<script>
+// Mantém as funções do script existente
+function tick(){
+ let d=new Date();
+ document.getElementById('clock').innerHTML=d.toLocaleTimeString('pt-BR');
+ let ev=new Date('2026-07-13T09:00:00'); // Data de início do evento
+ let diff=ev-d;
+ if(diff>0){document.getElementById('countdown').innerHTML='Faltam '+Math.floor(diff/86400000)+' dias para o evento';}
+ else{document.getElementById('countdown').innerHTML='Evento iniciado';}
+}
+setInterval(tick,1000); tick();
+
+function filterDay(day){
+ // Filtra atividades por dia
+ document.querySelectorAll('#agenda tbody tr').forEach(r=>{
+   r.style.display=(day==='all'||r.dataset.day===day)?'':'none';
+ });
+ // Atualiza estilo do botão ativo
+ document.querySelectorAll('.filter-section button').forEach(b => b.classList.remove('active'));
+ event.target.classList.add('active');
+}
+
+// Configuração do cronômetro do palestrante (55:00 = 3300 segundos)
+let initialSecs = 3300; 
+let secs=initialSecs, timer=null;
+
+function render(){
+ let m=Math.floor(secs/60),s=secs%60;
+ document.getElementById('speakerTimer').innerHTML=(m+'').padStart(2,'0')+':'+(s+'').padStart(2,'0');
+}
+
+function startTimer(){
+ if(timer) return; // Evita múltiplos timers
+ timer=setInterval(()=>{
+   if(secs>0){
+     secs--;
+     render();
+   } else {
+     clearInterval(timer);
+     timer = null;
+     alert("Tempo do palestrante esgotado!"); // Alerta ao fim do tempo
+   }
+ },1000);
+}
+
+function resetTimer(){
+ clearInterval(timer);
+ timer=null;
+ secs=initialSecs;
+ render();
+}
+
+render(); // Renderização inicial
+</script>
+</body>
+</html>
